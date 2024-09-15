@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- css file -->
+     <link rel="stylesheet" href="style.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"
+    />
+    <link rel="stylesheet" href="/source/jquery-ui.min.css" />
+    <link rel="stylesheet" href="/plugin/sidebar/L.Control.Sidebar.css" />
+    <link rel="stylesheet" href="/plugin/sidebar/leaflet-sidebar.css" />
+    <link rel="stylesheet" href="/plugin/easy-btn/easy-button.css" />
+    <link rel="stylesheet" href="/plugin/geoman/leaflet-geoman.css" />
+    <link rel="stylesheet" href="/plugin/alertify/alertify.min.css" />
+    <link rel="stylesheet" href="/plugin/alertify/default.min.css" />
+    <link rel="stylesheet" href="/plugin/toastify/toastify.min.css" />
+    <link
+      rel="stylesheet"
+      href="/plugin/poly-line-measure/Leaflet.PolylineMeasure.css"
+    />
+    <link rel="stylesheet" href="/plugin/mini-map/Control.MiniMap.css" />
+    <link
+      rel="stylesheet"
+      href="/plugin/mouse-position/L.Control.MousePosition.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"
+    />
+
+    <!-- script file -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet-src.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="/source/jquery-3.2.0.js"></script>
+    <script src="/source/jquery-ui.min.js"></script>
+    <script src="/plugin/sidebar/L.Control.Sidebar.js"></script>
+    <script src="/plugin/sidebar/leaflet-sidebar.js"></script>
+    <script src="/plugin/easy-btn/easy-button.js"></script>
+    <script src="/plugin/geoman/leaflet-geoman.js"></script>
+    <script src="/plugin/poly-line-measure/Leaflet.PolylineMeasure.js"></script>
+    <script src="/plugin/mini-map/Control.MiniMap.js"></script>
+    <script src="/plugin/mouse-position/L.Control.MousePosition.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="/plugin/leaflet-ajax/leaflet.ajax.js"></script>
+    <script src="/plugin/alertify/alertify.min.js"></script>
+    <script src="/plugin/toastify/toastify.min.js"></script>
+    <script
+      src="https://kit.fontawesome.com/22a70726e2.js"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: "#da373d",
+            },
+          },
+        },
+      };
+    </script>
+    <title>map</title>
+  </head>
+
+  <body>
+    <div class="main">
+      <div id="sideBar" class="sidebar collapsed">
+        <!-- Nav tabs -->
+        <div class="sidebar-tabs">
+          <ul role="tablist">
+            <li>
+              <a href="#home" role="tab"><i class="fa fa-house"></i></a>
+            </li>
+            <li>
+              <a href="#point" role="tab"><i class="fa fa-location-dot"></i></a>
+            </li>
+            <li>
+              <a href="#line" role="tab"
+                ><i class="fa fa-grip-lines-vertical"></i
+              ></a>
+            </li>
+            <li>
+              <a href="#polygon" role="tab"><i class="fa fa-building"></i></a>
+            </li>
+          </ul>
+          <!-- 
+          <ul role="tablist">
+            <li>
+              <a href="#settings" role="tab"><i class="fa fa-gear"></i></a>
+            </li>
+          </ul> -->
+        </div>
+
+        <!-- Tab panes -->
+        <div class="sidebar-content">
+          <div class="sidebar-pane" id="home">
+            <h1 class="sidebar-header">
+              Home
+              <span class="sidebar-close"
+                ><i class="fa fa-caret-left"></i
+              ></span>
+            </h1>
+          </div>
+
+          <div class="sidebar-pane" id="point">
+            <h1 class="sidebar-header">
+              Valve Info<span class="sidebar-close"
+                ><i class="fa fa-caret-left"></i
+              ></span>
+            </h1>
+            <div class="mr-4 mt-5">
+              <!-- <p class="text-center text-xl font-semibold mt-2">Valve Info</p>
+              <hr class="mt-1 mb-2" /> -->
+              <div class="flex gap-3 mt-2 flex-row md:max-lg:flex-col">
+                <input
+                  type="text"
+                  id="valve_id"
+                  class="p-2 outline-none border rounded-md"
+                  placeholder="Valve Id"
+                />
+                <button
+                  id="find-valve"
+                  class="text-center font-medium bg-blue-700 p-1.5 block text-white rounded-md flex-auto"
+                >
+                  Find
+                </button>
+              </div>
+              <p id="valve_info" class="mt-2"></p>
+            </div>
+            <hr class="my-5 mr-4" />
+            <!-- new valve starts here. -->
+            <div id="newValve" class="mr-4">
+              <div
+                class="flex items-center justify-between md:max-lg:flex-col flex-row md:max-lg:items-start gap-3 [&>*]:rounded-md [&>*]:py-2 [&>*]:px-3 text-center text-white"
+              >
+                <button
+                  type="button"
+                  class="bg-cyan-500 w-full"
+                  id="btn_valve_form"
+                >
+                  Insert New Valve
+                </button>
+                <button
+                  type="button"
+                  class="bg-orange-500 w-2/4 md:max-lg:w-full"
+                  id="btn_valve_refresh"
+                >
+                  Refresh
+                </button>
+              </div>
+              <div
+                id="new_valve_information"
+                class="h-0 p-0 border-none rounded-md mt-5 overflow-clip select-none duration-200"
+              >
+                <form id="valve_form" method="dialog" class="space-y-4">
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label class="font-normal md:font-medium" for="valve_id_new"
+                      >Valve ID</label
+                    >
+                    <input
+                      type="number"
+                      class="border outline-none p-1 rounded-md flex-auto md:max-lg:w-full"
+                      name="valve_id_new"
+                      id="valve_id_new"
+                      required
+                    />
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label class="font-normal md:font-medium" for="valve_type"
+                      >Valve Type</label
+                    >
+                    <select
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      name="valve_type"
+                      id="valve_type"
+                      required
+                    >
+                      <option value="">----</option>
+                      <option value="Gate Valve">Gate Valve</option>
+                      <option value="Washout Valve">Washout Valve</option>
+                      <option value="Air Release Valve">
+                        Air Release Valve
+                      </option>
+                    </select>
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label class="font-normal md:font-medium" for="valve_dma_id"
+                      >DMA ID</label
+                    >
+                    <input
+                      type="number"
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      name="valve_dma_id"
+                      id="valve_dma_id"
+                      required
+                    />
+                  </div>
+
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="valve_diameter"
+                      >Diameter (mm)</label
+                    >
+                    <input
+                      type="number"
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      name="valve_diameter"
+                      id="valve_diameter"
+                      required
+                    />
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="valve_visibility"
+                      >Visibility</label
+                    >
+                    <select
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      name="valve_visibility"
+                      id="valve_visibility"
+                      required
+                    >
+                      <option value="">----</option>
+                      <option value="Visible">Visible</option>
+                      <option value="Invisible">Invisible</option>
+                    </select>
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="valve_location"
+                      >Location</label
+                    >
+                    <input
+                      type="text"
+                      class="border outline-none p-1.5 rounded-md flex-1 md:max-lg:w-full"
+                      name="valve_location"
+                      id="valve_location"
+                      required
+                    />
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="valve_geometry"
+                      >Geometry</label
+                    >
+                    <textarea
+                      name="valve_geometry"
+                      id="valve_geometry"
+                      disabled
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      required
+                    ></textarea>
+                  </div>
+                  <div
+                    class="flex items-center justify-between flex-row md:max-lg:flex-col gap-3 [&>*]:border [&>*]:duration-200 [&>*]:font-semibold [&>*]:rounded-md [&>*]:py-2 [&>*]:px-3 text-center"
+                  >
+                    <button
+                      type="button"
+                      class="text-red-700 border-red-700 hover:bg-red-700 hover:text-white w-full"
+                      id="btn_valve_cancel"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      class="text-green-700 border-green-700 hover:bg-green-700 hover:text-white w-full"
+                      id="btn_valve_insert"
+                    >
+                      Insert Valve
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <!-- new valves ends here -->
+            </div>
+          </div>
+
+          <div class="sidebar-pane" id="line">
+            <h1 class="sidebar-header">
+              Pipeline Info<span class="sidebar-close"
+                ><i class="fa fa-caret-left"></i
+              ></span>
+            </h1>
+            <div class="mr-4 mt-5">
+              <div>
+                <div class="flex gap-3 mt-2 flex-row md:max-lg:flex-col">
+                  <input
+                    type="text"
+                    id="pipe_id"
+                    class="p-2 outline-none border rounded-md"
+                    placeholder="Pipeline Id"
+                  />
+                  <button
+                    id="find_pipe"
+                    class="text-center font-medium bg-blue-700 p-1.5 block text-white rounded-md flex-auto"
+                  >
+                    Find
+                  </button>
+                </div>
+              </div>
+              <p id="pipe_info" class="mt-2"></p>
+            </div>
+            <hr class="my-5 mr-4" />
+            <!-- new valve starts here. -->
+            <div id="newPipe" class="mr-4">
+              <div
+                class="flex items-center justify-between md:max-lg:flex-col flex-row md:max-lg:items-start gap-3 [&>*]:rounded-md [&>*]:py-2 [&>*]:px-3 text-center text-white"
+              >
+                <button
+                  type="button"
+                  class="bg-cyan-500 w-full"
+                  id="btn_pipe_form"
+                >
+                  Insert New Valve
+                </button>
+                <button
+                  type="button"
+                  class="bg-orange-500 w-2/4 md:max-lg:w-full"
+                  id="btn_pipe_refresh"
+                >
+                  Refresh
+                </button>
+              </div>
+              <div
+                id="new_pipe_information"
+                class="h-0 p-0 border-none rounded-md mt-5 overflow-clip select-none duration-200"
+              >
+                <form action="" class="space-y-4">
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label class="font-normal md:font-medium" for="pipe_id_new"
+                      >pipe ID</label
+                    >
+                    <input
+                      type="text"
+                      class="border outline-none p-1 rounded-md flex-auto md:max-lg:w-full"
+                      name="pipe_id_new"
+                      id="pipe_id_new"
+                    />
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label class="font-normal md:font-medium" for="pipe_type"
+                      >Category</label
+                    >
+                    <select
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      name="pipe_type"
+                      id="pipe_type"
+                    >
+                      <option value="">---</option>
+                      <option value="Distribution Pipeline">
+                        Distribution Pipeline
+                      </option>
+                      <option value="Reticulation Pipeline">
+                        Reticulation Pipeline
+                      </option>
+                      <option value="Transmission pipeline">
+                        Transmission pipeline
+                      </option>
+                    </select>
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label class="font-normal md:font-medium" for="pipe_dma_id"
+                      >DMA ID</label
+                    >
+                    <input
+                      type="text"
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      name="pipe_dma_id"
+                      id="pipe_dma_id"
+                    />
+                  </div>
+
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="pipe_diameter"
+                      >Diameter (mm)</label
+                    >
+                    <input
+                      type="text"
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      name="pipe_diameter"
+                      id="valve_diameter"
+                    />
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label class="font-normal md:font-medium" for="pipe_method"
+                      >Method</label
+                    >
+                    <select
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      name="pipe_method"
+                      id="pipe_method"
+                    >
+                      <option value="">---</option>
+                      <option value="HDD">HD</option>
+                      <option value="OT">OTT</option>
+                    </select>
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="pipe_location"
+                      >Location</label
+                    >
+                    <input
+                      type="text"
+                      class="border outline-none p-1.5 rounded-md flex-1 md:max-lg:w-full"
+                      name="pipe_location"
+                      id="pipe_location"
+                    />
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="pipe_geometry"
+                      >Geometry</label
+                    >
+                    <textarea
+                      name="pipe_geometry"
+                      id="pipe_geometry"
+                      disabled
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                    ></textarea>
+                  </div>
+                  <div
+                    class="flex items-center justify-between flex-row md:max-lg:flex-col gap-3 [&>*]:border [&>*]:duration-200 [&>*]:font-semibold [&>*]:rounded-md [&>*]:py-2 [&>*]:px-3 text-center"
+                  >
+                    <button
+                      type="button"
+                      class="text-red-700 border-red-700 hover:bg-red-700 hover:text-white w-full"
+                      id="btn_pipe_cancel"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      class="text-green-700 border-green-700 hover:bg-green-700 hover:text-white w-full"
+                      id="btn_pipe_insert"
+                    >
+                      Insert Pipe
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <!-- new valves ends here -->
+            </div>
+          </div>
+
+          <div class="sidebar-pane" id="polygon">
+            <h1 class="sidebar-header">
+              Building Info<span class="sidebar-close"
+                ><i class="fa fa-caret-left"></i
+              ></span>
+            </h1>
+            <div class="mr-4 mt-5">
+              <div>
+                <!-- <p class="text-center text-xl font-semibold mt-2">
+                  Building Info
+                </p>
+                <hr class="mt-1 mb-2" /> -->
+                <div class="flex gap-3 mt-2">
+                  <input
+                    type="text"
+                    id="building_id"
+                    class="p-2 outline-none border rounded-md"
+                    placeholder="Building Id"
+                  />
+                  <button
+                    id="find_build"
+                    class="text-center font-medium bg-blue-700 p-1.5 block text-white rounded-md flex-auto"
+                  >
+                    Find
+                  </button>
+                </div>
+              </div>
+              <p id="build_info" class="mt-2"></p>
+            </div>
+            <hr class="my-5 mr-4" />
+            <!-- new Building starts here. -->
+            <div id="newBuilding" class="mr-4">
+              <div
+                class="flex items-center justify-between md:max-lg:flex-col flex-row md:max-lg:items-start gap-3 [&>*]:rounded-md [&>*]:py-2 [&>*]:px-3 text-center text-white"
+              >
+                <button
+                  type="button"
+                  class="bg-cyan-500 w-full"
+                  id="btn_building_form"
+                >
+                  Insert New Building
+                </button>
+                <button
+                  type="button"
+                  class="bg-orange-500 w-2/4 md:max-lg:w-full"
+                  id="btn_building_refresh"
+                >
+                  Refresh
+                </button>
+              </div>
+              <div
+                id="new_building_information"
+                class="h-0 p-0 border-none rounded-md mt-5 overflow-clip select-none duration-200"
+              >
+                <form onsubmit="" class="space-y-4">
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="building_id_new"
+                      >building ID</label
+                    >
+                    <input
+                      type="text"
+                      class="border outline-none p-1 rounded-md flex-auto md:max-lg:w-full"
+                      name="building_id_new"
+                      id="building_id_new"
+                    />
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="building_type"
+                      >Category</label
+                    >
+                    <select
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      name="building_type"
+                      id="building_type"
+                    >
+                      <option value="">---</option>
+                      <option value="Building">Building</option>
+                      <option value="Open Plot">Open Plot</option>
+                      <option value="Tin Shed">Tin Shed</option>
+                      <option value="Under Construction">
+                        Under Construction
+                      </option>
+                    </select>
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="building_dma_id"
+                      >DMA ID</label
+                    >
+                    <input
+                      type="text"
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      name="building_dma_id"
+                      id="building_dma_id"
+                    />
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="building_storey"
+                      >Storey</label
+                    >
+                    <input
+                      type="text"
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      name="building_storey"
+                      id="building_storey"
+                    />
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="building_population"
+                      >Population</label
+                    >
+                    <input
+                      type="text"
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                      name="building_population"
+                      id="building_population"
+                    />
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="building_location"
+                      >Location</label
+                    >
+                    <input
+                      type="text"
+                      class="border outline-none p-1.5 rounded-md flex-1 md:max-lg:w-full"
+                      name="building_location"
+                      id="building_location"
+                    />
+                  </div>
+                  <div
+                    class="flex gap-2 items-center md:max-lg:items-start flex-row md:max-lg:flex-col"
+                  >
+                    <label
+                      class="font-normal md:font-medium"
+                      for="building_geometry"
+                      >Geometry</label
+                    >
+                    <textarea
+                      name="building_geometry"
+                      id="building_geometry"
+                      disabled
+                      class="border outline-none p-1.5 rounded-md flex-auto md:max-lg:w-full"
+                    ></textarea>
+                  </div>
+                  <div
+                    class="flex items-center justify-between flex-row md:max-lg:flex-col gap-3 [&>*]:border [&>*]:duration-200 [&>*]:font-semibold [&>*]:rounded-md [&>*]:py-2 [&>*]:px-3 text-center"
+                  >
+                    <button
+                      type="button"
+                      class="text-red-700 border-red-700 hover:bg-red-700 hover:text-white w-full"
+                      id="btn_building_cancel"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      class="text-green-700 border-green-700 hover:bg-green-700 hover:text-white w-full"
+                      id="btn_building_insert"
+                    >
+                      Insert Building
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <!-- new Building ends here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="mapDiv" class="w-full h-screen">
+      <p class=""></p>
+    </div>
+    <script src="map.js"></script>
+  </body>
+</html>
