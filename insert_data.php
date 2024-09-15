@@ -1,5 +1,5 @@
 <?php
-include "init.php";
+include "/init.php";
 
 $request = htmlspecialchars($_POST['request'], ENT_QUOTES);
 

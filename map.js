@@ -229,7 +229,7 @@ load_valves();
 
 function load_valves() {
   $.ajax({
-    url: "load_data.php",
+    url: "/back/load_data.php",
     data: {
       table: "valves",
     },
@@ -345,7 +345,7 @@ load_pipelines();
 
 function load_pipelines() {
   $.ajax({
-    url: "/load_data.php",
+    url: "/back/load_data.php",
     data: {
       table: "pipelines",
     },
@@ -469,7 +469,7 @@ var layerBuildings;
 
 function load_Buildings() {
   $.ajax({
-    url: "/load_data.php",
+    url: "/back/load_data.php",
     data: {
       table: "buildings",
     },
@@ -622,7 +622,7 @@ $("#find_build").click(function () {
 // utility
 function returnLayerByAttribute(table, field, value, callback) {
   $.ajax({
-    url: "/find_data.php",
+    url: "/back/find_data.php",
     data: {
       table,
       field,
@@ -663,6 +663,8 @@ $("#btn_pipe_form").click(() => showForm("#new_pipe_information"));
 $("#btn_pipe_cancel").click(() => hideForm("#new_pipe_information"));
 $("#btn_building_form").click(() => showForm("#new_building_information"));
 $("#btn_building_cancel").click(() => hideForm("#new_building_information"));
+
+console.log(valveForm)
 
 valveForm.addEventListener("submit", function (e) {
   function getValue(name) {

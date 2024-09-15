@@ -1,5 +1,5 @@
 <?php
-include 'init.php';
+include '/init.php';
 
 $table = htmlspecialchars($_POST['table'], ENT_QUOTES);
 $field = htmlspecialchars($_POST['field'], ENT_QUOTES);
